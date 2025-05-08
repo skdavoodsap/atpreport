@@ -1,0 +1,459 @@
+<mvc:View
+    class="sapUiSizeCompact"
+    controllerName="atpreport.controller.atpView"
+    xmlns="sap.ui.table"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:u="sap.ui.unified"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:l="sap.ui.layout"
+    xmlns:c="sap.ui.core"
+    xmlns:m="sap.m"
+    height="100%"
+    xmlns:core="sap.ui.core"
+    xmlns:html="http://www.w3.org/1999/xhtml"
+>
+    <html:style>
+        .matlab { margin-right: 85px !important;}
+	  .typelab { margin-left: 58px !important;}
+    </html:style>
+
+    <m:Page
+        showHeader="false"
+        class="sapUiBody sapUiContentPadding"
+        id="viewReporting"
+    >
+        <m:content>
+        <m:VBox width="650px">
+            <!---****************************************-->
+                              
+              <m:Toolbar class="sapUiTinyMarginTop sapUiTinyMarginBottom" width="100%">
+                <!-- class="zsapMLabel matlab" -->
+                <m:Label
+                    id="Material"
+                    text="Material"
+                    labelFor="MatInp"
+                    class="sapUiTinyMarginEnd zsapMLabel"     
+                    width="140px"
+                />
+
+                <m:Input
+                    id="idInptMaterial"
+                    width="25rem"
+                    placeholder="Search for Material..."
+                    showSuggestion="true"
+                    suggest="onSuggest"
+                    submit="onSearchBtn"
+                    suggestionItems="{ path: 'matnr>/',
+					                   sorter: { path: 'Matnr' }  }"
+                >
+                    <m:suggestionItems>                        
+                        <core:ListItem
+                            text="{matnr>Matnr}"
+                            additionalText="{matnr>Maktx}"
+                        />
+                    </m:suggestionItems>
+                </m:Input>
+
+                <m:Button
+                    text="Search"
+                    press="onSearchBtn"
+                    ariaDescribedBy="acceptButtonDescription genericButtonDescription"
+                    class="sapUiSmallMarginEnd"
+                />
+            </m:Toolbar>
+            <m:Toolbar class="sapUiTinyMarginTop sapUiTinyMarginBottom" width="100%">
+                <m:Label
+                    text="Apply Availability Rule"
+                    labelFor="rule"
+                    class="sapUiTinyMarginEnd zsapMLabel"
+                     width="140px"
+                />
+
+                <m:Select
+                    xmlns="sap.m"
+                    id="Rule"
+                    width="29rem"
+                    class="sapUiSmallMarginEnd"
+                >
+                    <core:Item
+                        key="Z5"
+                        text="Sales and Dist. Order Analysis(W/O PO's and Inbound Delivery)"
+                    />
+                    <core:Item
+                        key="Z6"
+                        text="Sales and Dist. Order (W/O incoming PO's)"
+                    />
+                    <core:Item
+                        key="Z7"
+                        text="Sales and Dist. Order (W/O receipt date in past)"
+                    />
+                    <core:Item
+                        key="Z8"
+                        text="Sales and Dist. Order"
+                    />
+                </m:Select>
+            </m:Toolbar>
+
+            <m:Toolbar class="sapUiTinyMarginTop sapUiTinyMarginBottom" width="100%">
+                <m:Label
+                    text="Requirement Date"
+                    labelFor="reqDate"
+                    class="sapUiTinyMarginEnd zsapMLabel"
+                    width="140px"
+                />
+                <m:DatePicker
+                    id="reqDate"
+                    required="true"
+                    tooltip="Open Date Picker"
+                    class="zsapMText sapUiSmallMarginEnd"
+                    width="150px"
+                    placeholder="From Date"
+                    value="{oGlobalModel>/ReqDate}"
+                    valueFormat="yyyyMMdd"
+                />
+               <!--
+                <m:Label
+                    id="textStatus11"
+                    text="Valuation Type"
+                    labelFor="idValuType"
+                    class="zsapMLabel typelab"
+                    width="1rem"
+                /> 
+                -->
+                <m:Label
+                    id="textStatus"
+                    text="Valuation Type"
+                    labelFor="idValuType"
+                    class="zsapMLabel typelab"
+                />
+                <m:Select
+                    xmlns="sap.m"
+                    id="idValuType"
+                    visible="true"
+                    width="9.25rem"
+                >
+                    <core:Item
+                        key="VALUATED"
+                        text="VALUATED"
+                    />
+                    <core:Item
+                        key="2NDCLASS"
+                        text="2NDCLASS"
+                    />
+                </m:Select>
+            </m:Toolbar>             
+            
+            <!--
+            <l:VerticalLayout  
+                class="sapUiContentPadding"   id="oVerticalContent"
+                width="650px"
+            >
+            -->
+             <l:VerticalLayout                
+                id="idVerticalContent"
+                width="630px"                
+            >
+                <l:content />
+            </l:VerticalLayout>
+            
+
+            <Table
+                id="tableReporting"
+                width="630px"
+                rows="{path: 'openItems>/'}"
+                visibleRowCount="{oGlobalModel>/Size}"
+                
+                selectionMode="None"
+                rowActionCount="1"
+                filter="filterStd"
+            >
+                <!-- class="sapUiSmallMarginBegin"-->
+                <extension>
+                    <m:OverflowToolbar
+                        style="Clear"
+                        height="3rem"                        
+                    >
+                        <m:ToolbarSpacer />
+                        <m:SearchField
+                            placeholder="Filter "
+                            value="{oGlobalModel>/globalFilter}"
+                            search="onFilter"
+                            width="10rem"
+                            class="sapUiTinyMarginEnd"
+                        />                        
+                        <m:Image
+                            press="onDataExport"
+                            src="/sap/bc/ui5_ui5/sap/zsharpcss/icons/icon_export_excel.png"
+                            tooltip="Export Report to Excel"
+                        />                        
+                        <!--
+                         <m:Image
+                            press="onExcelExportPOC"
+                            src="/sap/bc/ui5_ui5/sap/zsharpcss/icons/icon_export_excel.png"
+                            tooltip="POC POC"
+                        />
+                        -->
+                        <!--
+                        <m:Button
+                        text="Excel Export POC"
+                        press="onExcelExportPOC"
+                        ariaDescribedBy="acceptButtonDescription genericButtonDescription"
+                        class="sapUiSmallMarginEnd"
+                          />
+                        -->
+                        <m:Image
+                            press="createPDF"
+                            src="/sap/bc/ui5_ui5/sap/zsharpcss/icons/icon_export_pdf.png"
+                            tooltip="Export Report to PDF"                            
+                        />
+                    </m:OverflowToolbar>
+
+                    <!--  SHAIKD Start ...........................-->
+                    <!--
+                    <m:Bar >					
+						<m:contentRight>
+							<m:SearchField
+							placeholder="Filter"
+							value="{oGlobalModel>/globalFilter}"
+							search="onFilter"
+							width="10rem"
+							class="sapUiTinyMarginEnd"/>
+							<m:Image 
+							press="onDataExport" 
+							src="/sap/bc/ui5_ui5/sap/zsharpcss/icons/icon_export_excel.png"/>
+							<m:Image					
+							press="createPDF"
+							src="/sap/bc/ui5_ui5/sap/zsharpcss/icons/icon_export_pdf.png"/>							
+							</m:contentRight>
+					</m:Bar> 
+                    -->
+                    <!--  SHAIKD END ...........................-->
+                </extension>
+
+                <columns>
+                    <Column
+                        id="Plant"
+                        sortProperty="Werks"
+                        width="80px"
+                    >
+                        <m:Label
+                            text="Plant"
+                            design="Bold"
+                        />
+                        <template>
+                            <m:Text
+                                text="{ path:'openItems>Werks'}"
+                                wrapping="false"
+                            />
+                        </template>
+                    </Column>
+                    <Column
+                        id="Whouse"
+                        sortProperty="Name"
+                        width="240px"
+                    >
+                        <m:Label
+                            text="Warehouse"
+                            design="Bold"
+                        />
+                        <template>
+                            <m:Text
+                                text="{openItems>Name}"
+                                class="zsapMGridText"
+                            />
+                        </template>
+                    </Column>
+                    <Column
+                        id="reqDateInp"
+                        sortProperty="VDate"
+                        width="150px"
+                    >
+                        <m:Label
+                            text="Requirement Date"
+                            design="Bold"
+                        />
+                        <template>
+                            <m:Label
+                                text="{ path: 'openItems>VDate', formatter: '.formatter.dateFormat'}"
+                                design="{path:'openItems>VDate',formatter:'.totDesign'}"
+                            />
+                        </template>
+                    </Column>
+
+                    <Column
+                        id="quan"
+                        sortProperty="VAtp"
+                        width="150px"
+                        hAlign="Right"
+                    >
+                        <m:Label
+                            text="Available Quantity"
+                            design="Bold"
+                        />
+                        <template>
+                            <m:Text
+                                text="{ path: 'openItems>VAtp', formatter: '.formatter.quantityFormat'}"
+                                wrapping="false"
+                                class="zsapMGridText"
+                                textAlign="Right"
+                            />
+                        </template>
+                    </Column>
+                </columns>
+
+                <footer>
+                    <m:HBox>
+                        <m:Text text="Total Quantity: " />
+                        <m:ToolbarSpacer width="7px" />
+                        <m:ObjectNumber
+                            id="totquan"
+                            state="Warning"
+                            textAlign="Right"
+                        />
+                    </m:HBox>
+                </footer>
+            </Table>
+             </m:VBox>
+        </m:content>
+    </m:Page>
+</mvc:View>
+<!--
+  Simple Form START &&&&&&&&&&&&&&&&&&&&&&&&&&&&  
+
+           
+            <f:SimpleForm id="idSimpleForm"
+			editable="true"
+			layout="ResponsiveGridLayout"
+			title=""
+			labelSpanXL="3"
+			labelSpanL="3"
+			labelSpanM="3"
+			labelSpanS="12"
+			adjustLabelSpan="false"
+			emptySpanXL="4"
+			emptySpanL="4"
+			emptySpanM="4"
+			emptySpanS="0"
+			columnsXL="1"
+			columnsL="1"
+			columnsM="1"
+			singleContainerFullSize="true" >
+			<f:content>
+                <m:Label
+                    id="Material22"
+                    text="*Material"
+                    labelFor="MatInp"
+                    class="zsapMLabel matlab"                   
+                />
+
+                <m:Input
+                    id="idInptMaterial22"
+                    placeholder="Search for Material..."
+                    showSuggestion="true"
+                    suggest="onSuggest"
+                    suggestionItems="{
+					path: 'matnr>/',
+					sorter: { path: 'Matnr' }
+				}"
+                >
+                    <m:suggestionItems>
+                       
+                        <core:ListItem
+                            text="{matnr>Matnr}"
+                            additionalText="{matnr>Maktx}"
+                        />
+                    </m:suggestionItems>
+                </m:Input>
+
+                <m:Button
+                    text="Search"
+                    press="onSearchBtn"
+                    ariaDescribedBy="acceptButtonDescription genericButtonDescription"
+                    class="sapUiSmallMarginEnd"
+                     width="7rem"
+                />
+
+                 <m:Label
+                    text="Apply Availability Rule"
+                    labelFor="rule"
+                    class="sapUiTinyMarginEnd zsapMLabel"
+                />
+
+                <m:Select
+                    xmlns="sap.m"
+                    id="Rule22"
+                    width="30rem"
+                    class="sapUiSmallMarginEnd"
+                >
+                    <core:Item
+                        key="Z5"
+                        text="Sales and Dist. Order Analysis(W/O PO's and Inbound Delivery)"
+                    />
+                    <core:Item
+                        key="Z6"
+                        text="Sales and Dist. Order (W/O incoming PO's)"
+                    />
+                    <core:Item
+                        key="Z7"
+                        text="Sales and Dist. Order (W/O receipt date in past)"
+                    />
+                    <core:Item
+                        key="Z8"
+                        text="Sales and Dist. Order"
+                    />
+                </m:Select>
+                 <m:Label
+                    text="*Requirement Date"
+                    labelFor="reqDate"
+                    class="sapUiTinyMarginEnd zsapMLabel"
+                    
+                />
+                <m:DatePicker
+                    id="reqDate22"
+                    tooltip="Open Date Picker"
+                    class="zsapMText sapUiSmallMarginEnd"
+                    width="150px"
+                    placeholder="From Date"
+                    value="{oGlobalModel>/ReqDate}"
+                    valueFormat="yyyyMMdd"
+                />
+                
+                 <m:Text
+                    id="textStatus33"
+                    text="Valuation Type"
+                    labelFor="idValuType22"
+                    class="zsapMLabel"
+                />  
+                <m:Select
+                    xmlns="sap.m"
+                    id="idValuType22"
+                    visible="true"
+                    width="10rem"
+                >
+                    <core:Item
+                        key="VALUATED"
+                        text="VALUATED"
+                    />
+                    <core:Item
+                        key="2NDCLASS"
+                        text="2NDCLASS"
+                    />
+                </m:Select>
+                <m:Label                    
+                    text=""                    
+                    class="zsapMLabel typelab"
+                />
+                  <m:Button
+                    text="Search"
+                    press="onSearchBtn"
+                    ariaDescribedBy="acceptButtonDescription genericButtonDescription"
+                    class="sapUiSmallMarginEnd"
+                     width="7rem"
+                />
+
+            </f:content> 
+            
+		</f:SimpleForm>
+                
+              Simple Form END &&&&&&&&&&&&&&&&&&&&&&&&&&&& -->         
+

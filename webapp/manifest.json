@@ -1,0 +1,136 @@
+{
+  "_version": "1.59.0",
+  "sap.app": {
+    "id": "atpreport",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.12.5",
+      "toolsId": "cc021103-f8c4-485f-8138-780e795ba402"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/sap/opu/odata/sap/ZMM_ATPREPORT_SRV/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "localUri": "localService/metadata.xml",
+          "odataVersion": "2.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": false,
+    "dependencies": {
+      "minUI5Version": "1.121.1",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.f": {},
+        "sap.suite.ui.generic.template": {},
+        "sap.ui.comp": {},
+        "sap.ui.generic.app": {},
+        "sap.ui.table": {},
+        "sap.ushell": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "atpreport.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {}
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri":"/sap/bc/ui5_ui5/sap/zsharpcss/css/style.css"  
+        }
+      ],
+      
+      "js": [
+        {
+          "uri":"image/jsPDF.js"  
+        }
+        
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.m.routing.Router",
+        "viewType": "XML",
+        "async": true,
+        "viewPath": "atpreport.view",
+        "controlAggregation": "pages",
+        "controlId": "fioriContent",
+        "clearControlAggregation": false
+      },
+      "routes" : [{
+        "name" : "claimsMainView",
+        "pattern" : "",
+        "target" : "atpView"
+      }, {
+        "name" : "claimsSubmitReport",
+        "pattern" : "claimsSubmitReport/{Id}",
+        "target" : "claimsSubmitReport"
+      },{
+          "path": "/services/userapi",
+          "target": {
+            "type": "service",
+            "name": "userapi"
+          }
+      }],
+      "targets" : {
+        "atpView" : {
+          "viewName" : "atpView",
+          "viewLevel" : 0
+        },
+        "claimsSubmitReport" : {
+          "viewName" : "claimsSubmitReport",
+          "viewLevel" : 1
+        }
+
+      }
+    },
+    "rootView": {
+      "viewName": "atpreport.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "App"
+    }
+  }
+}
